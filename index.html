@@ -174,7 +174,8 @@ const sounds = {
     zaandukki: new Audio('zaandukki.mp3'),
     november: new Audio('November.mp3'),
     molodets: new Audio('Molodets.mp3'),
-    meladze: new Audio('Meladze.mp3')
+    meladze: new Audio('Meladze.mp3'),
+    suspense: new Audio('suspense.mp3')
 };
 
 // Preload sounds
@@ -204,7 +205,10 @@ function stopSound(soundName) {
 function initializeGame() {
     word = words[currentLevel];
     document.getElementById('game-title').textContent = currentLevel === 4 ? 'Виселица – Финальный уровень' : `Виселица - Уровень ${currentLevel}`;
- 
+    
+    // Play suspense music
+    playSound('suspense');
+    
     let wordDisplay = '';
     if (currentLevel === 3) {
         wordDisplay = word.map(w =>
@@ -312,6 +316,10 @@ function checkLoss() {
 function endGame(isWin) {
     document.getElementById('alphabet').style.pointerEvents = 'none';
     const message = document.getElementById('message');
+    
+    // Stop suspense music
+    stopSound('suspense');
+    
     if (isWin) {
         if (currentLevel === 4) {
             playSound('zaandukki');
