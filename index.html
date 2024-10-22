@@ -210,6 +210,8 @@ function initializeGame() {
     playSound('suspense');
     
     let wordDisplay = '';
+    // ... rest of initializeGame function remains the same ...
+}
     if (currentLevel === 3) {
         wordDisplay = word.map(w =>
             `<div class="word-row">${w.split('').map(() => '<div class="letter-box"></div>').join('')}</div>`
