@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Добро пожаловать, Сабина!</title>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            background-color: #48bb78;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .welcome-text {
+            text-align: center;
+            color: black;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .ready-button, .play-button, .next-level-button {
+            background-color: #2f855a;
+            color: white;
+            border: 2px solid black;
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .ready-button:hover, .play-button:hover, .next-level-button:hover {
+            background-color: #38a169;
+        }
+        .game-page {
+            display: none;
+            padding: 20px;
+            background-color: #48bb78;
+            min-height: 100%;
+            box-sizing: border-box;
+        }
+        .game-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        #errors-left {
+            font-size: 18px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        #word-display {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .word-row {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+        .letter-box {
+            width: 30px;
+            height: 40px;
+            border: 2px solid black;
+            margin: 0 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+        }
+        #alphabet {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .alphabet-letter {
+            width: 30px;
+            height: 30px;
+            border: 1px solid black;
+            margin: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            background-color: white;
+            color: black;
+            font-size: 18px;
+        }
+        #hangman-drawing {
+            width: 200px;
+            height: 250px;
+            margin: 20px auto;
+        }
+        #message {
+            text-align: center;
+            font-size: 20px;
+            margin-top: 20px;
+        }
+        #win-picture {
+            max-width: 300px;
+            height: auto;
+            margin: 20px auto;
+            display: none;
+        }
+        #hint {
+            text-align: center;
+            font-size: 18px;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div id="welcome-page" class="container">
+        <div class="welcome-text">
+            Добро пожаловать, Сабина! Готова ли ты догадаться место куда тебе надо поехать дальше, с помощью подсказок?
+        </div>
+        <button id="ready-button" class="ready-button">Я готова!</button>
+    </div>
+    <div id="game-page" class="game-page">
+        <h1 id="game-title" class="game-title">Виселица - Уровень 1</h1>
+        <img id="win-picture" alt="Win picture">
+        <div id="errors-left">Оставшиеся допущенные ошибки: 7</div>
+        <div id="hint"></div>
+        <div id="hangman-drawing">
+            <svg width="200" height="250" viewBox="0 0 200 250" xmlns="http://www.w3.org/2000/svg"></svg>
+        </div>
+        <div id="word-display"></div>
+        <div id="alphabet"></div>
+        <div id="message"></div>
+    </div>
+    <script>
+    // JavaScript code will be provided in the next part
+let currentLevel = 1;
+const words = {
+    1: 'НОЯБРЬ',
+    2: 'МЕЛАДЗЕ',
+    3: ['ЯКОВА', 'ЛОГВИНЕНКО'],
+    4: 'ЗААНДУККИ'
+};
+let word = words[currentLevel];
+let errorsLeft = 7;
+let guessedLetters = new Set();
+const hangmanParts = [
+    `<path d="M20,230 Q90,180 160,230" stroke="black" fill="none" stroke-width="5"/>
+     <line x1="90" y1="230" x2="90" y2="50" stroke="black" stroke-width="5"/>
+     <line x1="90" y1="50" x2="150" y2="50" stroke="black" stroke-width="5"/>
+     <line x1="150" y1="50" x2="150" y2="80" stroke="black" stroke-width="5"/>`,
+    '<circle cx="150" cy="100" r="20" stroke="black" fill="none" stroke-width="5"/>',
+    '<line x1="150" y1="120" x2="150" y2="170" stroke="black" stroke-width="5"/>',
+    '<line x1="150" y1="130" x2="180" y2="150" stroke="black" stroke-width="5"/>',
+    '<line x1="150" y1="130" x2="120" y2="150" stroke="black" stroke-width="5"/>',
+    '<line x1="150" y1="170" x2="180" y2="200" stroke="black" stroke-width="5"/>',
+    '<line x1="150" y1="170" x2="120" y2="200" stroke="black" stroke-width="5"/>'
+];
+
+// Sound effects
+const sounds = {
+    correct: new Audio('cling.mp3'),
+    incorrect: new Audio('buzzer.mp3'),
+    win: new Audio('applause.mp3'),
+    lose: new Audio('aww.mp3'),
+    zaandukki: new Audio('zaandukki.mp3'),
+    november: new Audio('November.mp3'),
+    molodets: new Audio('Molodets.mp3'),
+    meladze: new Audio('Meladze.mp3')
+};
+
+// Preload sounds
+for (let sound in sounds) {
+    sounds[sound].load();
+}
+
+function playSound(soundName) {
+    const sound = sounds[soundName];
+    if (sound) {
+        if (sound.paused) {
+            sound.play().catch(e => console.error("Error playing sound:", e));
+        } else {
+            sound.currentTime = 0;
+        }
+    }
+}
+
+function stopSound(soundName) {
+    const sound = sounds[soundName];
+    if (sound) {
+        sound.pause();
+        sound.currentTime = 0;
+    }
+}
+
+function initializeGame() {
+    word = words[currentLevel];
+    document.getElementById('game-title').textContent = currentLevel === 4 ? 'Виселица – Финальный уровень' : `Виселица - Уровень ${currentLevel}`;
+ 
+    let wordDisplay = '';
+    if (currentLevel === 3) {
+        wordDisplay = word.map(w =>
+            `<div class="word-row">${w.split('').map(() => '<div class="letter-box"></div>').join('')}</div>`
+        ).join('');
+    } else {
+        wordDisplay = `<div class="word-row">${word.split('').map(() => '<div class="letter-box"></div>').join('')}</div>`;
+    }
+    document.getElementById('word-display').innerHTML = wordDisplay;
+    const alphabet = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ';
+    document.getElementById('alphabet').innerHTML = alphabet.split('').map(letter =>
+        `<div class="alphabet-letter" data-letter="${letter}">${letter}</div>`
+    ).join('');
+    errorsLeft = 7;
+    guessedLetters.clear();
+    updateErrorsLeft();
+    document.querySelector('#hangman-drawing svg').innerHTML = '';
+    document.getElementById('message').innerHTML = '';
+    document.getElementById('alphabet').style.pointerEvents = 'auto';
+    document.getElementById('win-picture').style.display = 'none';
+    document.getElementById('hangman-drawing').style.display = 'block';
+    document.getElementById('hint').textContent = '';
+    
+    // Add click event listeners to alphabet letters
+    document.querySelectorAll('.alphabet-letter').forEach(letter => {
+        letter.addEventListener('click', function() {
+            guessLetter(this.dataset.letter);
+        });
+    });
+}
+
+function guessLetter(letter) {
+    if (guessedLetters.has(letter)) return;
+    guessedLetters.add(letter);
+    const letterElement = document.querySelector(`.alphabet-letter[data-letter="${letter}"]`);
+    if ((currentLevel === 3 && (word[0].includes(letter) || word[1].includes(letter))) ||
+        (currentLevel !== 3 && word.includes(letter))) {
+        letterElement.style.backgroundColor = 'green';
+        letterElement.style.color = 'white';
+        playSound('correct');
+        updateWordDisplay();
+        checkWin();
+    } else {
+        letterElement.style.backgroundColor = 'red';
+        letterElement.style.color = 'white';
+        playSound('incorrect');
+        errorsLeft--;
+        updateErrorsLeft();
+        updateHangman();
+        checkLoss();
+    }
+}
+
+function updateWordDisplay() {
+    if (currentLevel === 3) {
+        word.forEach((w, index) => {
+            const display = w.split('').map(letter =>
+                guessedLetters.has(letter) ? letter : ''
+            );
+            document.querySelectorAll('.word-row')[index].childNodes.forEach((box, i) => {
+                box.textContent = display[i];
+            });
+        });
+    } else {
+        const display = word.split('').map(letter =>
+            guessedLetters.has(letter) ? letter : ''
+        );
+        document.querySelector('.word-row').childNodes.forEach((box, index) => {
+            box.textContent = display[index];
+        });
+    }
+}
+
+function updateErrorsLeft() {
+    document.getElementById('errors-left').textContent = `Оставшиеся допущенные ошибки: ${errorsLeft}`;
+    if (currentLevel === 3 && errorsLeft === 3) {
+        document.getElementById('hint').textContent = 'Подсказка : Улица бишкека';
+    }
+}
+
+function updateHangman() {
+    const svg = document.querySelector('#hangman-drawing svg');
+    svg.innerHTML += hangmanParts[7 - errorsLeft - 1];
+}
+
+function checkWin() {
+    let win;
+    if (currentLevel === 3) {
+        win = word[0].split('').every(letter => guessedLetters.has(letter)) &&
+              word[1].split('').every(letter => guessedLetters.has(letter));
+    } else {
+        win = word.split('').every(letter => guessedLetters.has(letter));
+    }
+    if (win) {
+        endGame(true);
+    }
+}
+
+function checkLoss() {
+    if (errorsLeft === 0) {
+        endGame(false);
+    }
+}
+
+function endGame(isWin) {
+    document.getElementById('alphabet').style.pointerEvents = 'none';
+    const message = document.getElementById('message');
+    if (isWin) {
+        if (currentLevel === 4) {
+            playSound('zaandukki');
+        } else if (currentLevel === 1) {
+            playSound('november');
+        } else if (currentLevel === 2) {
+            playSound('meladze');
+        } else if (currentLevel === 3) {
+            playSound('molodets');
+        }
+        if (currentLevel === 1) {
+            const winPicture = document.getElementById('win-picture');
+            winPicture.src = 'November.jpg';
+            winPicture.style.display = 'block';
+            document.getElementById('hangman-drawing').style.display = 'none';
+            message.innerHTML = 'Поздравляю! К следующему раунду?<br><button class="next-level-button" onclick="goToNextLevel()">Уровень 2</button>';
+        } else if (currentLevel === 2) {
+            const winPicture = document.getElementById('win-picture');
+            winPicture.src = 'meladze.jpg';
+            winPicture.style.display = 'block';
+            document.getElementById('hangman-drawing').style.display = 'none';
+            message.innerHTML = 'Умница моя! Готова к последней подсказке?<br><button class="next-level-button" onclick="goToNextLevel()">Уровень 3</button>';
+        } else if (currentLevel === 3) {
+            message.innerHTML = 'Кто молодец! Ты молодец! А сейчас догадаться место куда мы поедем дальше?<br><button class="next-level-button" onclick="goToNextLevel()">Финальный уровень</button>';
+        } else if (currentLevel === 4) {
+            message.innerHTML = 'Ух ты, обалдеть! Погнали!';
+        }
+    } else {
+        playSound('lose');
+        message.innerHTML = 'Попробуй ещё раз чтобы получить подсказку!<br><button class="play-button" onclick="restartGame()">Играть</button>';
+    }
+}
+
+function restartGame() {
+    currentLevel = 1;
+    initializeGame();
+}
+
+function goToNextLevel() {
+    if (currentLevel < 4) {
+        if (currentLevel === 1) {
+            stopSound('november');
+        } else if (currentLevel === 2) {
+            stopSound('meladze');
+        } else if (currentLevel === 3) {
+            stopSound('molodets');
+        }
+        currentLevel++;
+        initializeGame();
+    }
+}
+
+document.getElementById('ready-button').addEventListener('click', function() {
+    document.getElementById('welcome-page').style.display = 'none';
+    document.getElementById('game-page').style.display = 'block';
+    initializeGame();
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('welcome-page').style.display = 'flex';
+    document.getElementById('game-page').style.display = 'none';
+});
+    </script>
+</body>
+</html>
