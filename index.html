@@ -122,6 +122,7 @@
 </head>
 <body>
     <div id="welcome-page" class="container">
+        <img id="game-picture" src="game.jpg" alt="Game" style="max-width: 300px; height: auto; margin-bottom: 20px;">
         <div class="welcome-text">
             Добро пожаловать, Сабина! Готова ли ты догадаться место куда тебе надо поехать дальше, с помощью подсказок?
         </div>
@@ -314,6 +315,10 @@ function endGame(isWin) {
     if (isWin) {
         if (currentLevel === 4) {
             playSound('zaandukki');
+            const winPicture = document.getElementById('win-picture');
+            winPicture.src = 'zaandukki.jpg';
+            winPicture.style.display = 'block';
+            document.getElementById('hangman-drawing').style.display = 'none';
             message.innerHTML = 'Ух ты, обалдеть! Погнали!';
         } else if (currentLevel === 1) {
             playSound('november');
@@ -331,6 +336,10 @@ function endGame(isWin) {
             message.innerHTML = 'Умница моя! Готова к последней подсказке?<br><button class="next-level-button" onclick="goToNextLevel()">Уровень 3</button>';
         } else if (currentLevel === 3) {
             playSound('molodets');
+            const winPicture = document.getElementById('win-picture');
+            winPicture.src = 'molodets.jpg';
+            winPicture.style.display = 'block';
+            document.getElementById('hangman-drawing').style.display = 'none';
             message.innerHTML = 'Кто молодец! Ты молодец! А сейчас догадаться место куда мы поедем дальше?<br><button class="next-level-button" onclick="goToNextLevel()">Финальный уровень</button>';
         }
     } else {
