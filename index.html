@@ -314,29 +314,24 @@ function endGame(isWin) {
     if (isWin) {
         if (currentLevel === 4) {
             playSound('zaandukki');
+            message.innerHTML = 'Ух ты, обалдеть! Погнали!';
         } else if (currentLevel === 1) {
             playSound('november');
-        } else if (currentLevel === 2) {
-            playSound('meladze');
-        } else if (currentLevel === 3) {
-            playSound('molodets');
-        }
-        if (currentLevel === 1) {
             const winPicture = document.getElementById('win-picture');
             winPicture.src = 'November.jpg';
             winPicture.style.display = 'block';
             document.getElementById('hangman-drawing').style.display = 'none';
             message.innerHTML = 'Поздравляю! К следующему раунду?<br><button class="next-level-button" onclick="goToNextLevel()">Уровень 2</button>';
         } else if (currentLevel === 2) {
+            playSound('meladze');
             const winPicture = document.getElementById('win-picture');
             winPicture.src = 'meladze.jpg';
             winPicture.style.display = 'block';
             document.getElementById('hangman-drawing').style.display = 'none';
             message.innerHTML = 'Умница моя! Готова к последней подсказке?<br><button class="next-level-button" onclick="goToNextLevel()">Уровень 3</button>';
         } else if (currentLevel === 3) {
+            playSound('molodets');
             message.innerHTML = 'Кто молодец! Ты молодец! А сейчас догадаться место куда мы поедем дальше?<br><button class="next-level-button" onclick="goToNextLevel()">Финальный уровень</button>';
-        } else if (currentLevel === 4) {
-            message.innerHTML = 'Ух ты, обалдеть! Погнали!';
         }
     } else {
         playSound('lose');
