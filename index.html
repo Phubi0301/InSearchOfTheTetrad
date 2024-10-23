@@ -144,7 +144,6 @@
     // Initialize variables
     let currentLevel = 1;
 
-let currentLevel = 1;
 const words = {
     1: 'НОЯБРЬ',
     2: 'МЕЛАДЗЕ',
@@ -183,17 +182,33 @@ const sounds = {
     suspense: 'suspense.mp3',
     intro: 'intro.mp3'
 };
+const soundCache = {};
+const imageCache = {};
 
-function playSound(soundName) {
-    if (sounds[soundName]) {
-        let audio;
+function preloadResources() {
+    // Preload sounds
+    for (let soundName in sounds) {
+        soundCache[soundName] = new Audio(sounds[soundName]);
+        soundCache[soundName].load();
+    }
+    
+    // Preload images
+    const imagesToPreload = ['game.jpg', 'November.jpg', 'meladze.jpg', 'molodets.jpg', 'zaandukki.jpg'];
+    imagesToPreload.forEach(imageName => {
+        imageCache[imageName] = new Image();
+        imageCache[imageName].src = imageName;
+    });
+}
+       function playSound(soundName) {
+    if (soundCache[soundName]) {
+        let audio = soundCache[soundName].cloneNode(true);
+        
         switch(soundName) {
             case 'intro':
                 if (introAudio) {
                     introAudio.pause();
                     introAudio.currentTime = 0;
                 }
-                audio = new Audio(sounds[soundName]);
                 introAudio = audio;
                 break;
             case 'suspense':
@@ -201,17 +216,17 @@ function playSound(soundName) {
                     suspenseAudio.pause();
                     suspenseAudio.currentTime = 0;
                 }
-                audio = new Audio(sounds[soundName]);
                 suspenseAudio = audio;
+                audio.loop = true;
                 break;
             default:
-                audio = new Audio(sounds[soundName]);
                 if (currentAudio) {
                     currentAudio.pause();
                     currentAudio.currentTime = 0;
                 }
                 currentAudio = audio;
         }
+        
         audio.play().catch(e => console.error("Error playing sound:", e));
         return audio;
     }
@@ -361,28 +376,28 @@ function endGame(isWin) {
         if (currentLevel === 4) {
             playSound('zaandukki');
             const winPicture = document.getElementById('win-picture');
-            winPicture.src = 'zaandukki.jpg';
+            winPicture.src = imageCache['zaandukki.jpg'].src;
             winPicture.style.display = 'block';
             document.getElementById('hangman-drawing').style.display = 'none';
             message.innerHTML = 'Ух ты, обалдеть! Погнали!';
         } else if (currentLevel === 1) {
             playSound('november');
             const winPicture = document.getElementById('win-picture');
-            winPicture.src = 'November.jpg';
+            winPicture.src = imageCache['November.jpg'].src;
             winPicture.style.display = 'block';
             document.getElementById('hangman-drawing').style.display = 'none';
             message.innerHTML = 'Поздравляю! К следующему раунду?<br><button class="next-level-button" onclick="goToNextLevel()">Уровень 2</button>';
         } else if (currentLevel === 2) {
             playSound('meladze');
             const winPicture = document.getElementById('win-picture');
-            winPicture.src = 'meladze.jpg';
+            winPicture.src = imageCache['meladze.jpg'].src;
             winPicture.style.display = 'block';
             document.getElementById('hangman-drawing').style.display = 'none';
             message.innerHTML = 'Умница моя! Готова к последней подсказке?<br><button class="next-level-button" onclick="goToNextLevel()">Уровень 3</button>';
         } else if (currentLevel === 3) {
             playSound('molodets');
             const winPicture = document.getElementById('win-picture');
-            winPicture.src = 'molodets.jpg';
+            winPicture.src = imageCache['molodets.jpg'].src;
             winPicture.style.display = 'block';
             document.getElementById('hangman-drawing').style.display = 'none';
             message.innerHTML = 'Кто молодец! Ты молодец! А сейчас догадаться место куда мы поедем дальше?<br><button class="next-level-button" onclick="goToNextLevel()">Финальный уровень</button>';
@@ -413,8 +428,9 @@ function goToNextLevel() {
 }
         
 document.addEventListener('DOMContentLoaded', function() {
-    // Set up initial event listener for ready button
-document.addEventListener('DOMContentLoaded', function() {
+    // Preload all resources first
+    preloadResources();
+    
     // Initial setup
     document.getElementById('welcome-page').style.display = 'flex';
     document.getElementById('game-page').style.display = 'none';
@@ -428,11 +444,11 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('game-page').style.display = 'block';
         initializeGame();
     });
+});
 
-    // Play intro sound after a short delay
-    setTimeout(() => {
-        playSound('intro');
-    }, 500);
+// Add this new event listener
+window.addEventListener('load', function() {
+    playSound('intro');
 });
 </script>
 </body>
