@@ -140,9 +140,9 @@
         <div id="alphabet"></div>
         <div id="message"></div>
     </div>
-    <script>
-    // JavaScript code will be provided in the next part
-let currentLevel = 1;
+   <script>
+    // Initialize variables
+    let currentLevel = 1;
 const words = {
     1: 'НОЯБРЬ',
     2: 'МЕЛАДЗЕ',
@@ -176,8 +176,9 @@ const sounds = {
     molodets: new Audio('Molodets.mp3'),
     meladze: new Audio('Meladze.mp3'),
     suspense: new Audio('suspense.mp3'),
-    intro: new Audio('intro.mp3')  // Add this line
+    intro: new Audio('intro.mp3')
 };
+
 
 // Preload sounds
 for (let sound in sounds) {
@@ -376,18 +377,29 @@ function goToNextLevel() {
     }
 }
         
-document.getElementById('ready-button').addEventListener('click', function() {
-    stopSound('intro');
-    document.getElementById('welcome-page').style.display = 'none';
-    document.getElementById('game-page').style.display = 'block';
-    initializeGame();
-});
-
-document.addEventListener('DOMContentLoaded', function() {
+window.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded'); // Debug log
     document.getElementById('welcome-page').style.display = 'flex';
     document.getElementById('game-page').style.display = 'none';
-    playSound('intro');
+    
+    // Play intro music
+    setTimeout(() => {
+        playSound('intro');
+        console.log('Playing intro sound'); // Debug log
+    }, 500);
+
+    // Add click listener to ready button
+    const readyButton = document.getElementById('ready-button');
+    if (readyButton) {
+        readyButton.addEventListener('click', function() {
+            console.log('Ready button clicked'); // Debug log
+            stopSound('intro');
+            document.getElementById('welcome-page').style.display = 'none';
+            document.getElementById('game-page').style.display = 'block';
+            initializeGame();
+        });
+    }
 });
-    </script>
+</script>
 </body>
 </html>
