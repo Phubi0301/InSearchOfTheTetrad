@@ -144,6 +144,7 @@
     // Initialize variables
     let currentLevel = 1;
 
+let currentLevel = 1;
 const words = {
     1: 'НОЯБРЬ',
     2: 'МЕЛАДЗЕ',
@@ -185,33 +186,32 @@ const sounds = {
 
 function playSound(soundName) {
     if (sounds[soundName]) {
-        const audio = new Audio(sounds[soundName]);
-        
-        // Handle special cases
-        if (soundName === 'intro') {
-            if (introAudio) {
-                introAudio.pause();
-                introAudio.currentTime = 0;
-            }
-            introAudio = audio;
-        } else if (soundName === 'suspense') {
-            if (suspenseAudio) {
-                suspenseAudio.pause();
-                suspenseAudio.currentTime = 0;
-            }
-            suspenseAudio = audio;
-        } else {
-            if (currentAudio) {
-                currentAudio.pause();
-                currentAudio.currentTime = 0;
-            }
-            currentAudio = audio;
+        let audio;
+        switch(soundName) {
+            case 'intro':
+                if (introAudio) {
+                    introAudio.pause();
+                    introAudio.currentTime = 0;
+                }
+                audio = new Audio(sounds[soundName]);
+                introAudio = audio;
+                break;
+            case 'suspense':
+                if (suspenseAudio) {
+                    suspenseAudio.pause();
+                    suspenseAudio.currentTime = 0;
+                }
+                audio = new Audio(sounds[soundName]);
+                suspenseAudio = audio;
+                break;
+            default:
+                audio = new Audio(sounds[soundName]);
+                if (currentAudio) {
+                    currentAudio.pause();
+                    currentAudio.currentTime = 0;
+                }
+                currentAudio = audio;
         }
-
-        // Preload the audio
-        audio.load();
-        
-        // Play the sound
         audio.play().catch(e => console.error("Error playing sound:", e));
         return audio;
     }
@@ -414,18 +414,25 @@ function goToNextLevel() {
         
 document.addEventListener('DOMContentLoaded', function() {
     // Set up initial event listener for ready button
+document.addEventListener('DOMContentLoaded', function() {
+    // Initial setup
+    document.getElementById('welcome-page').style.display = 'flex';
+    document.getElementById('game-page').style.display = 'none';
+
+    // Set up button listener
     document.getElementById('ready-button').addEventListener('click', function() {
-        stopSound('intro');
+        if (introAudio) {
+            stopSound('intro');
+        }
         document.getElementById('welcome-page').style.display = 'none';
         document.getElementById('game-page').style.display = 'block';
         initializeGame();
     });
-});
 
-window.addEventListener('load', function() {
-    document.getElementById('welcome-page').style.display = 'flex';
-    document.getElementById('game-page').style.display = 'none';
-    playSound('intro');
+    // Play intro sound after a short delay
+    setTimeout(() => {
+        playSound('intro');
+    }, 500);
 });
 </script>
 </body>
