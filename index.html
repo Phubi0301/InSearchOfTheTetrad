@@ -167,40 +167,32 @@ const hangmanParts = [
 
 // Sound effects
 const sounds = {
-    correct: new Audio('cling.mp3'),
-    incorrect: new Audio('buzzer.mp3'),
-    win: new Audio('applause.mp3'),
-    lose: new Audio('aww.mp3'),
-    zaandukki: new Audio('zaandukki.mp3'),
-    november: new Audio('November.mp3'),
-    molodets: new Audio('Molodets.mp3'),
-    meladze: new Audio('Meladze.mp3'),
-    suspense: new Audio('suspense.mp3'),
-    intro: new Audio('intro.mp3')
+    correct: 'cling.mp3',
+    incorrect: 'buzzer.mp3',
+    win: 'applause.mp3',
+    lose: 'aww.mp3',
+    zaandukki: 'zaandukki.mp3',
+    november: 'November.mp3',
+    molodets: 'Molodets.mp3',
+    meladze: 'Meladze.mp3',
+    suspense: 'suspense.mp3',
+    intro: 'intro.mp3'
 };
 
-
-// Preload sounds
-for (let sound in sounds) {
-    sounds[sound].load();
-}
-
 function playSound(soundName) {
-    const sound = sounds[soundName];
-    if (sound) {
-        if (sound.paused) {
-            sound.play().catch(e => console.error("Error playing sound:", e));
-        } else {
-            sound.currentTime = 0;
-        }
+    if (sounds[soundName]) {
+        const audio = new Audio(sounds[soundName]);
+        audio.play().catch(e => console.error("Error playing sound:", e));
+        return audio;
     }
+    return null;
 }
 
 function stopSound(soundName) {
-    const sound = sounds[soundName];
-    if (sound) {
-        sound.pause();
-        sound.currentTime = 0;
+    const audio = document.querySelector(`audio[src$="${sounds[soundName]}"]`);
+    if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
     }
 }
 
@@ -377,28 +369,17 @@ function goToNextLevel() {
     }
 }
         
-window.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM loaded'); // Debug log
+document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('welcome-page').style.display = 'flex';
     document.getElementById('game-page').style.display = 'none';
-    
-    // Play intro music
-    setTimeout(() => {
-        playSound('intro');
-        console.log('Playing intro sound'); // Debug log
-    }, 500);
+    playSound('intro');
+});
 
-    // Add click listener to ready button
-    const readyButton = document.getElementById('ready-button');
-    if (readyButton) {
-        readyButton.addEventListener('click', function() {
-            console.log('Ready button clicked'); // Debug log
-            stopSound('intro');
-            document.getElementById('welcome-page').style.display = 'none';
-            document.getElementById('game-page').style.display = 'block';
-            initializeGame();
-        });
-    }
+document.getElementById('ready-button').addEventListener('click', function() {
+    stopSound('intro');
+    document.getElementById('welcome-page').style.display = 'none';
+    document.getElementById('game-page').style.display = 'block';
+    initializeGame();
 });
 </script>
 </body>
