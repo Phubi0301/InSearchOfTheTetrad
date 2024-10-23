@@ -377,15 +377,16 @@ function goToNextLevel() {
 }
 
 document.getElementById('ready-button').addEventListener('click', function() {
-    stopSound('intro');  // Add this line
+    stopSound('intro');
     document.getElementById('welcome-page').style.display = 'none';
     document.getElementById('game-page').style.display = 'block';
     initializeGame();
+});
 
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('welcome-page').style.display = 'flex';
     document.getElementById('game-page').style.display = 'none';
-    playSound('intro');  // Add this line
+    playSound('intro');
 });
     </script>
 </body>
