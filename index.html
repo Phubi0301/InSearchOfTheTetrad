@@ -141,9 +141,6 @@
         <div id="message"></div>
     </div>
    <script>
-    // Initialize variables
-    let currentLevel = 1;
-
 const words = {
     1: 'НОЯБРЬ',
     2: 'МЕЛАДЗЕ',
@@ -186,18 +183,23 @@ const soundCache = {};
 const imageCache = {};
 
 function preloadResources() {
-    // Preload sounds
-    for (let soundName in sounds) {
-        soundCache[soundName] = new Audio(sounds[soundName]);
-        soundCache[soundName].load();
+    try {
+        // Preload sounds
+        for (let soundName in sounds) {
+            soundCache[soundName] = new Audio(sounds[soundName]);
+            soundCache[soundName].load();
+        }
+        
+        // Preload images
+        const imagesToPreload = ['game.jpg', 'November.jpg', 'meladze.jpg', 'molodets.jpg', 'zaandukki.jpg'];
+        imagesToPreload.forEach(imageName => {
+            imageCache[imageName] = new Image();
+            imageCache[imageName].src = imageName;
+            imageCache[imageName].onerror = () => console.error(`Failed to load image: ${imageName}`);
+        });
+    } catch (error) {
+        console.error('Error preloading resources:', error);
     }
-    
-    // Preload images
-    const imagesToPreload = ['game.jpg', 'November.jpg', 'meladze.jpg', 'molodets.jpg', 'zaandukki.jpg'];
-    imagesToPreload.forEach(imageName => {
-        imageCache[imageName] = new Image();
-        imageCache[imageName].src = imageName;
-    });
 }
        function playSound(soundName) {
     if (soundCache[soundName]) {
@@ -428,27 +430,35 @@ function goToNextLevel() {
 }
         
 document.addEventListener('DOMContentLoaded', function() {
-    // Preload all resources first
+    // Preload everything first
     preloadResources();
     
-    // Initial setup
+    // Set up the initial display
     document.getElementById('welcome-page').style.display = 'flex';
     document.getElementById('game-page').style.display = 'none';
+});
 
-    // Set up button listener
-    document.getElementById('ready-button').addEventListener('click', function() {
+// Handle the ready button click
+const readyButton = document.getElementById('ready-button');
+if (readyButton) {
+    readyButton.onclick = function() {
+        // Stop intro music if playing
         if (introAudio) {
             stopSound('intro');
         }
+        // Hide welcome page and show game
         document.getElementById('welcome-page').style.display = 'none';
         document.getElementById('game-page').style.display = 'block';
+        // Start the game
         initializeGame();
-    });
-});
+    };
+}
 
-// Add this new event listener
+// Play intro music when everything is loaded
 window.addEventListener('load', function() {
-    playSound('intro');
+    setTimeout(() => {
+        playSound('intro');
+    }, 1000);
 });
 </script>
 </body>
