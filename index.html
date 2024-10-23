@@ -143,7 +143,7 @@
    <script>
     // Initialize variables
     let currentLevel = 1;
-let currentLevel = 1;
+
 const words = {
     1: 'НОЯБРЬ',
     2: 'МЕЛАДЗЕ',
@@ -181,27 +181,57 @@ const sounds = {
     intro: 'intro.mp3'
 };
 
+function playSound(soundName) {
+    if (sounds[soundName]) {
+        const audio = new Audio(sounds[soundName]);
+        
+        // Handle special cases
+        if (soundName === 'intro') {
+            if (introAudio) {
+                introAudio.pause();
+                introAudio.currentTime = 0;
+            }
+            introAudio = audio;
+        } else if (soundName === 'suspense') {
+            if (suspenseAudio) {
+                suspenseAudio.pause();
+                suspenseAudio.currentTime = 0;
+            }
+            suspenseAudio = audio;
+        } else {
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+            }
+            currentAudio = audio;
+        }
+
+        // Preload the audio
+        audio.load();
+        
+        // Play the sound
+        audio.play().catch(e => console.error("Error playing sound:", e));
+        return audio;
+    }
+    return null;
+}
+
 function stopSound(soundName) {
     if (soundName === 'intro' && introAudio) {
         introAudio.pause();
         introAudio.currentTime = 0;
         introAudio = null;
-    } else {
-        const audio = document.querySelector(`audio[src$="${sounds[soundName]}"]`);
-        if (audio) {
-            audio.pause();
-            audio.currentTime = 0;
-        }
+    } else if (soundName === 'suspense' && suspenseAudio) {
+        suspenseAudio.pause();
+        suspenseAudio.currentTime = 0;
+        suspenseAudio = null;
+    } else if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+        currentAudio = null;
     }
 }
 
-function stopSound(soundName) {
-    const audio = document.querySelector(`audio[src$="${sounds[soundName]}"]`);
-    if (audio) {
-        audio.pause();
-        audio.currentTime = 0;
-    }
-}
 
 function initializeGame() {
     word = words[currentLevel];
@@ -318,8 +348,12 @@ function endGame(isWin) {
     document.getElementById('alphabet').style.pointerEvents = 'none';
     const message = document.getElementById('message');
     
-    // Stop suspense music
+    // Stop all current sounds
     stopSound('suspense');
+    stopSound('intro');
+    if (currentAudio) {
+        stopSound('current');
+    }
     
     if (isWin) {
         if (currentLevel === 4) {
@@ -379,8 +413,7 @@ function goToNextLevel() {
 window.addEventListener('load', function() {
     document.getElementById('welcome-page').style.display = 'flex';
     document.getElementById('game-page').style.display = 'none';
-    introAudio = new Audio(sounds.intro);
-    introAudio.play().catch(e => console.error("Error playing intro:", e));
+    playSound('intro');
 });
 
 document.getElementById('ready-button').addEventListener('click', function() {
