@@ -121,7 +121,7 @@
     </style>
 </head>
 <body>
-    <div id="welcome-page" class="container">
+      <div id="welcome-page" class="container">
         <img id="game-picture" src="game.jpg" alt="Game" style="max-width: 300px; height: auto; margin-bottom: 20px;">
         <div class="welcome-text">
             Добро пожаловать в игру "Кто хочет найти тетрадь?", Сабина! Готова ли ты догадаться место куда тебе надо поехать дальше, с помощью подсказок?
@@ -175,8 +175,7 @@ const sounds = {
     november: new Audio('November.mp3'),
     molodets: new Audio('Molodets.mp3'),
     meladze: new Audio('Meladze.mp3'),
-    suspense: new Audio('suspense.mp3'),
-    intro: new Audio('intro.mp3')
+    suspense: new Audio('suspense.mp3')
 };
 
 // Preload sounds
@@ -377,7 +376,6 @@ function goToNextLevel() {
 }
 
 document.getElementById('ready-button').addEventListener('click', function() {
-    stopSound('intro');
     document.getElementById('welcome-page').style.display = 'none';
     document.getElementById('game-page').style.display = 'block';
     initializeGame();
@@ -386,7 +384,6 @@ document.getElementById('ready-button').addEventListener('click', function() {
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('welcome-page').style.display = 'flex';
     document.getElementById('game-page').style.display = 'none';
-    playSound('intro');
 });
     </script>
 </body>
