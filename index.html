@@ -143,6 +143,7 @@
    <script>
     // Initialize variables
     let currentLevel = 1;
+let currentLevel = 1;
 const words = {
     1: 'НОЯБРЬ',
     2: 'МЕЛАДЗЕ',
@@ -152,6 +153,7 @@ const words = {
 let word = words[currentLevel];
 let errorsLeft = 7;
 let guessedLetters = new Set();
+let introAudio = null;  // Add this line here
 const hangmanParts = [
     `<path d="M20,230 Q90,180 160,230" stroke="black" fill="none" stroke-width="5"/>
      <line x1="90" y1="230" x2="90" y2="50" stroke="black" stroke-width="5"/>
@@ -179,13 +181,18 @@ const sounds = {
     intro: 'intro.mp3'
 };
 
-function playSound(soundName) {
-    if (sounds[soundName]) {
-        const audio = new Audio(sounds[soundName]);
-        audio.play().catch(e => console.error("Error playing sound:", e));
-        return audio;
+function stopSound(soundName) {
+    if (soundName === 'intro' && introAudio) {
+        introAudio.pause();
+        introAudio.currentTime = 0;
+        introAudio = null;
+    } else {
+        const audio = document.querySelector(`audio[src$="${sounds[soundName]}"]`);
+        if (audio) {
+            audio.pause();
+            audio.currentTime = 0;
+        }
     }
-    return null;
 }
 
 function stopSound(soundName) {
@@ -369,10 +376,11 @@ function goToNextLevel() {
     }
 }
         
-document.addEventListener('DOMContentLoaded', function() {
+window.addEventListener('load', function() {
     document.getElementById('welcome-page').style.display = 'flex';
     document.getElementById('game-page').style.display = 'none';
-    playSound('intro');
+    introAudio = new Audio(sounds.intro);
+    introAudio.play().catch(e => console.error("Error playing intro:", e));
 });
 
 document.getElementById('ready-button').addEventListener('click', function() {
