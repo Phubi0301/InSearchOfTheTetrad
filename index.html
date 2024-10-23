@@ -121,13 +121,13 @@
     </style>
 </head>
 <body>
-   <div id="welcome-page" class="container">
-    <img id="game-picture" src="game.jpg" alt="Game" style="max-width: 300px; height: auto; margin-bottom: 20px;">
-    <div class="welcome-text">
-        Добро пожаловать в игру "Кто хочет найти тетрадь?", Сабина! Готова ли ты догадаться место куда тебе надо поехать дальше, с помощью подсказок?
+    <div id="welcome-page" class="container">
+        <img id="game-picture" src="game.jpg" alt="Game" style="max-width: 300px; height: auto; margin-bottom: 20px;">
+        <div class="welcome-text">
+            Добро пожаловать, Сабина! Готова ли ты догадаться место куда тебе надо поехать дальше, с помощью подсказок?
+        </div>
+        <button id="ready-button" class="ready-button">Я готова!</button>
     </div>
-    <button id="ready-button" class="ready-button">Я готова!</button>
-</div>
     <div id="game-page" class="game-page">
         <h1 id="game-title" class="game-title">Виселица - Уровень 1</h1>
         <img id="win-picture" alt="Win picture">
@@ -140,7 +140,9 @@
         <div id="alphabet"></div>
         <div id="message"></div>
     </div>
-   <script>
+    <script>
+    // JavaScript code will be provided in the next part
+let currentLevel = 1;
 const words = {
     1: 'НОЯБРЬ',
     2: 'МЕЛАДЗЕ',
@@ -150,9 +152,6 @@ const words = {
 let word = words[currentLevel];
 let errorsLeft = 7;
 let guessedLetters = new Set();
-let introAudio = null;
-let suspenseAudio = null;
-let currentAudio = null;
 const hangmanParts = [
     `<path d="M20,230 Q90,180 160,230" stroke="black" fill="none" stroke-width="5"/>
      <line x1="90" y1="230" x2="90" y2="50" stroke="black" stroke-width="5"/>
@@ -168,89 +167,40 @@ const hangmanParts = [
 
 // Sound effects
 const sounds = {
-    correct: 'cling.mp3',
-    incorrect: 'buzzer.mp3',
-    win: 'applause.mp3',
-    lose: 'aww.mp3',
-    zaandukki: 'zaandukki.mp3',
-    november: 'November.mp3',
-    molodets: 'Molodets.mp3',
-    meladze: 'Meladze.mp3',
-    suspense: 'suspense.mp3',
-    intro: 'intro.mp3'
+    correct: new Audio('cling.mp3'),
+    incorrect: new Audio('buzzer.mp3'),
+    win: new Audio('applause.mp3'),
+    lose: new Audio('aww.mp3'),
+    zaandukki: new Audio('zaandukki.mp3'),
+    november: new Audio('November.mp3'),
+    molodets: new Audio('Molodets.mp3'),
+    meladze: new Audio('Meladze.mp3'),
+    suspense: new Audio('suspense.mp3')
 };
-const soundCache = {};
-const imageCache = {};
 
-function preloadResources() {
-    try {
-        // Preload sounds
-        for (let soundName in sounds) {
-            soundCache[soundName] = new Audio(sounds[soundName]);
-            soundCache[soundName].load();
-        }
-        
-        // Preload images
-        const imagesToPreload = ['game.jpg', 'November.jpg', 'meladze.jpg', 'molodets.jpg', 'zaandukki.jpg'];
-        imagesToPreload.forEach(imageName => {
-            imageCache[imageName] = new Image();
-            imageCache[imageName].src = imageName;
-            imageCache[imageName].onerror = () => console.error(`Failed to load image: ${imageName}`);
-        });
-    } catch (error) {
-        console.error('Error preloading resources:', error);
-    }
+// Preload sounds
+for (let sound in sounds) {
+    sounds[sound].load();
 }
-       function playSound(soundName) {
-    if (soundCache[soundName]) {
-        let audio = soundCache[soundName].cloneNode(true);
-        
-        switch(soundName) {
-            case 'intro':
-                if (introAudio) {
-                    introAudio.pause();
-                    introAudio.currentTime = 0;
-                }
-                introAudio = audio;
-                break;
-            case 'suspense':
-                if (suspenseAudio) {
-                    suspenseAudio.pause();
-                    suspenseAudio.currentTime = 0;
-                }
-                suspenseAudio = audio;
-                audio.loop = true;
-                break;
-            default:
-                if (currentAudio) {
-                    currentAudio.pause();
-                    currentAudio.currentTime = 0;
-                }
-                currentAudio = audio;
+
+function playSound(soundName) {
+    const sound = sounds[soundName];
+    if (sound) {
+        if (sound.paused) {
+            sound.play().catch(e => console.error("Error playing sound:", e));
+        } else {
+            sound.currentTime = 0;
         }
-        
-        audio.play().catch(e => console.error("Error playing sound:", e));
-        return audio;
     }
-    return null;
 }
 
 function stopSound(soundName) {
-    if (soundName === 'intro' && introAudio) {
-        introAudio.pause();
-        introAudio.currentTime = 0;
-        introAudio = null;
-    } else if (soundName === 'suspense' && suspenseAudio) {
-        suspenseAudio.pause();
-        suspenseAudio.currentTime = 0;
-        suspenseAudio = null;
-    } else if (currentAudio) {
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-        currentAudio = null;
+    const sound = sounds[soundName];
+    if (sound) {
+        sound.pause();
+        sound.currentTime = 0;
     }
 }
-
 
 function initializeGame() {
     word = words[currentLevel];
@@ -367,39 +317,35 @@ function endGame(isWin) {
     document.getElementById('alphabet').style.pointerEvents = 'none';
     const message = document.getElementById('message');
     
-    // Stop all current sounds
+    // Stop suspense music
     stopSound('suspense');
-    stopSound('intro');
-    if (currentAudio) {
-        stopSound('current');
-    }
     
     if (isWin) {
         if (currentLevel === 4) {
             playSound('zaandukki');
             const winPicture = document.getElementById('win-picture');
-            winPicture.src = imageCache['zaandukki.jpg'].src;
+            winPicture.src = 'zaandukki.jpg';
             winPicture.style.display = 'block';
             document.getElementById('hangman-drawing').style.display = 'none';
             message.innerHTML = 'Ух ты, обалдеть! Погнали!';
         } else if (currentLevel === 1) {
             playSound('november');
             const winPicture = document.getElementById('win-picture');
-            winPicture.src = imageCache['November.jpg'].src;
+            winPicture.src = 'November.jpg';
             winPicture.style.display = 'block';
             document.getElementById('hangman-drawing').style.display = 'none';
             message.innerHTML = 'Поздравляю! К следующему раунду?<br><button class="next-level-button" onclick="goToNextLevel()">Уровень 2</button>';
         } else if (currentLevel === 2) {
             playSound('meladze');
             const winPicture = document.getElementById('win-picture');
-            winPicture.src = imageCache['meladze.jpg'].src;
+            winPicture.src = 'meladze.jpg';
             winPicture.style.display = 'block';
             document.getElementById('hangman-drawing').style.display = 'none';
             message.innerHTML = 'Умница моя! Готова к последней подсказке?<br><button class="next-level-button" onclick="goToNextLevel()">Уровень 3</button>';
         } else if (currentLevel === 3) {
             playSound('molodets');
             const winPicture = document.getElementById('win-picture');
-            winPicture.src = imageCache['molodets.jpg'].src;
+            winPicture.src = 'molodets.jpg';
             winPicture.style.display = 'block';
             document.getElementById('hangman-drawing').style.display = 'none';
             message.innerHTML = 'Кто молодец! Ты молодец! А сейчас догадаться место куда мы поедем дальше?<br><button class="next-level-button" onclick="goToNextLevel()">Финальный уровень</button>';
@@ -428,38 +374,17 @@ function goToNextLevel() {
         initializeGame();
     }
 }
-        
+
+document.getElementById('ready-button').addEventListener('click', function() {
+    document.getElementById('welcome-page').style.display = 'none';
+    document.getElementById('game-page').style.display = 'block';
+    initializeGame();
+});
+
 document.addEventListener('DOMContentLoaded', function() {
-    // Preload everything first
-    preloadResources();
-    
-    // Set up the initial display
     document.getElementById('welcome-page').style.display = 'flex';
     document.getElementById('game-page').style.display = 'none';
 });
-
-// Handle the ready button click
-const readyButton = document.getElementById('ready-button');
-if (readyButton) {
-    readyButton.onclick = function() {
-        // Stop intro music if playing
-        if (introAudio) {
-            stopSound('intro');
-        }
-        // Hide welcome page and show game
-        document.getElementById('welcome-page').style.display = 'none';
-        document.getElementById('game-page').style.display = 'block';
-        // Start the game
-        initializeGame();
-    };
-}
-
-// Play intro music when everything is loaded
-window.addEventListener('load', function() {
-    setTimeout(() => {
-        playSound('intro');
-    }, 1000);
-});
-</script>
+    </script>
 </body>
 </html>
