@@ -153,7 +153,9 @@ const words = {
 let word = words[currentLevel];
 let errorsLeft = 7;
 let guessedLetters = new Set();
-let introAudio = null;  // Add this line here
+let introAudio = null;
+let suspenseAudio = null;
+let currentAudio = null;
 const hangmanParts = [
     `<path d="M20,230 Q90,180 160,230" stroke="black" fill="none" stroke-width="5"/>
      <line x1="90" y1="230" x2="90" y2="50" stroke="black" stroke-width="5"/>
@@ -410,17 +412,20 @@ function goToNextLevel() {
     }
 }
         
+document.addEventListener('DOMContentLoaded', function() {
+    // Set up initial event listener for ready button
+    document.getElementById('ready-button').addEventListener('click', function() {
+        stopSound('intro');
+        document.getElementById('welcome-page').style.display = 'none';
+        document.getElementById('game-page').style.display = 'block';
+        initializeGame();
+    });
+});
+
 window.addEventListener('load', function() {
     document.getElementById('welcome-page').style.display = 'flex';
     document.getElementById('game-page').style.display = 'none';
     playSound('intro');
-});
-
-document.getElementById('ready-button').addEventListener('click', function() {
-    stopSound('intro');
-    document.getElementById('welcome-page').style.display = 'none';
-    document.getElementById('game-page').style.display = 'block';
-    initializeGame();
 });
 </script>
 </body>
