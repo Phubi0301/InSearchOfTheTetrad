@@ -124,7 +124,7 @@
       <div id="welcome-page" class="container">
         <img id="game-picture" src="game.jpg" alt="Game" style="max-width: 300px; height: auto; margin-bottom: 20px;">
         <div class="welcome-text">
-            Добро пожаловать, Сабина! Готовы ли вы догадаться место куда вам надо поехать дальше, с помощью подсказок?
+            Добро пожаловать в игру "Кто хочет найти тетрадь?", Сабина! Готова ли ты догадаться место куда тебе надо поехать дальше, с помощью подсказок?
         </div>
         <button id="ready-button" class="ready-button">Я готова!</button>
     </div>
@@ -204,102 +204,48 @@ function stopSound(soundName) {
 
 function initializeGame() {
     word = words[currentLevel];
-    console.log("Initializing game for level:", currentLevel, "Word:", word); // Debug log
-    document.getElementById('game-title').textContent = currentLevel === 4 ? 'Финальный уровень' : `Виселица - Уровень ${currentLevel}`;
+    document.getElementById('game-title').textContent = currentLevel === 4 ? 'Виселица – Финальный уровень' : `Виселица - Уровень ${currentLevel}`;
     
     // Play suspense music
     playSound('suspense');
     
-    if (currentLevel === 4) {
-        // [Keep the level 4 code exactly the same]
+    let wordDisplay = '';
+    if (currentLevel === 3) {
+        wordDisplay = word.map(w =>
+            `<div class="word-row">${w.split('').map(() => '<div class="letter-box"></div>').join('')}</div>`
+        ).join('');
     } else {
-        document.getElementById('alphabet').style.display = 'flex';
-        document.getElementById('hangman-drawing').style.display = 'block';
-        document.getElementById('errors-left').style.display = 'block';
-        let wordDisplay = '';
-        if (currentLevel === 3) {
-            wordDisplay = words[3].map(w =>
-                `<div class="word-row">${w.split('').map(() => '<div class="letter-box"></div>').join('')}</div>`
-            ).join('');
-        } else {
-            wordDisplay = `<div class="word-row">${words[currentLevel].split('').map(() => '<div class="letter-box"></div>').join('')}</div>`;
-        }
-        document.getElementById('word-display').innerHTML = wordDisplay;
-        
-       const alphabet = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ';
-document.getElementById('alphabet').innerHTML = alphabet.split('').map(letter =>
-    `<div class="alphabet-letter" data-letter="${letter}">${letter}</div>`
-).join('');
-
-// Add click listeners after creating the elements
-document.querySelectorAll('.alphabet-letter').forEach(element => {
-    element.addEventListener('click', function() {
-        const letter = this.getAttribute('data-letter');
-        guessLetter(letter);
-    });
-});
-
+        wordDisplay = `<div class="word-row">${word.split('').map(() => '<div class="letter-box"></div>').join('')}</div>`;
+    }
+    document.getElementById('word-display').innerHTML = wordDisplay;
+    const alphabet = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ';
+    document.getElementById('alphabet').innerHTML = alphabet.split('').map(letter =>
+        `<div class="alphabet-letter" data-letter="${letter}">${letter}</div>`
+    ).join('');
     errorsLeft = 7;
-    guessedLetters = new Set();
+    guessedLetters.clear();
     updateErrorsLeft();
     document.querySelector('#hangman-drawing svg').innerHTML = '';
     document.getElementById('message').innerHTML = '';
+    document.getElementById('alphabet').style.pointerEvents = 'auto';
     document.getElementById('win-picture').style.display = 'none';
+    document.getElementById('hangman-drawing').style.display = 'block';
     document.getElementById('hint').textContent = '';
-}
-
-function checkFinalAnswer() {
-    const answer = document.getElementById('final-answer').value.trim();
-    if (answer.toLowerCase() === 'zaandukki') {
-        // Win condition
-        const message = document.getElementById('message');
-        stopSound('suspense');
-        playSound('zaandukki');
-        const winPicture = document.getElementById('win-picture');
-        winPicture.src = 'zaandukki.jpg';
-        winPicture.style.display = 'block';
-        message.innerHTML = 'Ух ты, обалдеть! Погнали!';
-    } else {
-        // Lose condition
-        const message = document.getElementById('message');
-        stopSound('suspense');
-        playSound('lose');
-        message.innerHTML = 'Попробуй ещё раз чтобы получить подсказку!<br><button class="play-button" onclick="restartFinalLevel()">Играть</button>';
-    }
-}
-
-function restartFinalLevel() {
-    document.getElementById('message').innerHTML = '';
-    document.getElementById('final-answer').value = '';
-    document.getElementById('win-picture').style.display = 'none';
-    playSound('suspense');
+    
+    // Add click event listeners to alphabet letters
+    document.querySelectorAll('.alphabet-letter').forEach(letter => {
+        letter.addEventListener('click', function() {
+            guessLetter(this.dataset.letter);
+        });
+    });
 }
 
 function guessLetter(letter) {
-    // Remove any quotes that might be around the letter
-    letter = letter.replace(/['"]/g, '');
-    
-    console.log("Guessing letter:", letter, "Current level:", currentLevel, "Current word:", words[currentLevel]);
-    
-    if (guessedLetters.has(letter)) {
-        console.log("Letter already guessed");
-        return;
-    }
-    
+    if (guessedLetters.has(letter)) return;
     guessedLetters.add(letter);
     const letterElement = document.querySelector(`.alphabet-letter[data-letter="${letter}"]`);
-    
-    let isCorrect = false;
-    
-    if (currentLevel === 3) {
-        isCorrect = words[3][0].includes(letter) || words[3][1].includes(letter);
-    } else {
-        isCorrect = words[currentLevel].includes(letter);
-    }
-    
-    console.log("Letter is correct:", isCorrect);
-    
-    if (isCorrect) {
+    if ((currentLevel === 3 && (word[0].includes(letter) || word[1].includes(letter))) ||
+        (currentLevel !== 3 && word.includes(letter))) {
         letterElement.style.backgroundColor = 'green';
         letterElement.style.color = 'white';
         playSound('correct');
@@ -317,10 +263,8 @@ function guessLetter(letter) {
 }
 
 function updateWordDisplay() {
-    console.log('Updating display for level:', currentLevel, 'Word:', words[currentLevel]);
-    
     if (currentLevel === 3) {
-        words[3].forEach((w, index) => {
+        word.forEach((w, index) => {
             const display = w.split('').map(letter =>
                 guessedLetters.has(letter) ? letter : ''
             );
@@ -329,7 +273,7 @@ function updateWordDisplay() {
             });
         });
     } else {
-        const display = words[currentLevel].split('').map(letter =>
+        const display = word.split('').map(letter =>
             guessedLetters.has(letter) ? letter : ''
         );
         document.querySelector('.word-row').childNodes.forEach((box, index) => {
@@ -337,7 +281,6 @@ function updateWordDisplay() {
         });
     }
 }
-
 
 function updateErrorsLeft() {
     document.getElementById('errors-left').textContent = `Оставшиеся допущенные ошибки: ${errorsLeft}`;
@@ -354,10 +297,10 @@ function updateHangman() {
 function checkWin() {
     let win;
     if (currentLevel === 3) {
-        win = words[3][0].split('').every(letter => guessedLetters.has(letter)) &&
-              words[3][1].split('').every(letter => guessedLetters.has(letter));
+        win = word[0].split('').every(letter => guessedLetters.has(letter)) &&
+              word[1].split('').every(letter => guessedLetters.has(letter));
     } else {
-        win = words[currentLevel].split('').every(letter => guessedLetters.has(letter));
+        win = word.split('').every(letter => guessedLetters.has(letter));
     }
     if (win) {
         endGame(true);
@@ -378,7 +321,14 @@ function endGame(isWin) {
     stopSound('suspense');
     
     if (isWin) {
-        if (currentLevel === 1) {
+        if (currentLevel === 4) {
+            playSound('zaandukki');
+            const winPicture = document.getElementById('win-picture');
+            winPicture.src = 'zaandukki.jpg';
+            winPicture.style.display = 'block';
+            document.getElementById('hangman-drawing').style.display = 'none';
+            message.innerHTML = 'Ух ты, обалдеть! Погнали!';
+        } else if (currentLevel === 1) {
             playSound('november');
             const winPicture = document.getElementById('win-picture');
             winPicture.src = 'November.jpg';
@@ -408,7 +358,6 @@ function endGame(isWin) {
 
 function restartGame() {
     currentLevel = 1;
-    word = words[currentLevel];  // Update the word variable
     initializeGame();
 }
 
@@ -422,7 +371,6 @@ function goToNextLevel() {
             stopSound('molodets');
         }
         currentLevel++;
-        word = words[currentLevel];  // Update the word variable
         initializeGame();
     }
 }
