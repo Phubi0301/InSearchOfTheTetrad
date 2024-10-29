@@ -250,7 +250,7 @@ function initializeGame() {
         document.getElementById('errors-left').style.display = 'block';
         let wordDisplay = '';
         if (currentLevel === 3) {
-            wordDisplay = word.map(w =>
+            wordDisplay = words[3].map(w =>
                 `<div class="word-row">${w.split('').map(() => '<div class="letter-box"></div>').join('')}</div>`
             ).join('');
         } else {
@@ -366,10 +366,10 @@ function updateHangman() {
 function checkWin() {
     let win;
     if (currentLevel === 3) {
-        win = word[0].split('').every(letter => guessedLetters.has(letter)) &&
-              word[1].split('').every(letter => guessedLetters.has(letter));
+        win = words[3][0].split('').every(letter => guessedLetters.has(letter)) &&
+              words[3][1].split('').every(letter => guessedLetters.has(letter));
     } else {
-        win = word.split('').every(letter => guessedLetters.has(letter));
+        win = words[currentLevel].split('').every(letter => guessedLetters.has(letter));
     }
     if (win) {
         endGame(true);
@@ -390,14 +390,7 @@ function endGame(isWin) {
     stopSound('suspense');
     
     if (isWin) {
-        if (currentLevel === 4) {
-            playSound('zaandukki');
-            const winPicture = document.getElementById('win-picture');
-            winPicture.src = 'zaandukki.jpg';
-            winPicture.style.display = 'block';
-            document.getElementById('hangman-drawing').style.display = 'none';
-            message.innerHTML = 'Ух ты, обалдеть! Погнали!';
-        } else if (currentLevel === 1) {
+        if (currentLevel === 1) {
             playSound('november');
             const winPicture = document.getElementById('win-picture');
             winPicture.src = 'November.jpg';
