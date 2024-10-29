@@ -204,11 +204,41 @@ function stopSound(soundName) {
 
 function initializeGame() {
     word = words[currentLevel];
-    document.getElementById('game-title').textContent = currentLevel === 4 ? 'Виселица – Финальный уровень' : `Виселица - Уровень ${currentLevel}`;
+    document.getElementById('game-title').textContent = currentLevel === 4 ? 'Финальный уровень' : `Виселица - Уровень ${currentLevel}`;
     
     // Play suspense music
     playSound('suspense');
     
+    if (currentLevel === 4) {
+        // Special handling for final level
+        document.getElementById('word-display').innerHTML = `
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div style="font-size: 20px; margin-bottom: 15px;">Напишите название следующего места латиницей</div>
+                <input type="text" id="final-answer" 
+                    style="padding: 10px; 
+                           font-size: 18px; 
+                           width: 200px; 
+                           text-align: center; 
+                           border: 2px solid black; 
+                           border-radius: 5px;">
+                <button onclick="checkFinalAnswer()" 
+                    style="display: block; 
+                           margin: 15px auto; 
+                           padding: 10px 20px; 
+                           font-size: 18px; 
+                           background-color: #2f855a; 
+                           color: white; 
+                           border: 2px solid black; 
+                           cursor: pointer;">
+                    Проверить
+                </button>
+            </div>`;
+        document.getElementById('alphabet').style.display = 'none';
+        document.getElementById('hangman-drawing').style.display = 'none';
+        document.getElementById('errors-left').style.display = 'none';
+        return; // Exit the function early for level 4
+    }
+        
     let wordDisplay = '';
     if (currentLevel === 3) {
         wordDisplay = word.map(w =>
@@ -356,6 +386,34 @@ function endGame(isWin) {
     }
 }
 
+        // Add the new functions here
+function checkFinalAnswer() {
+    const answer = document.getElementById('final-answer').value.trim();
+    if (answer.toLowerCase() === 'zaandukki') {
+        // Win condition
+        const message = document.getElementById('message');
+        stopSound('suspense');
+        playSound('zaandukki');
+        const winPicture = document.getElementById('win-picture');
+        winPicture.src = 'zaandukki.jpg';
+        winPicture.style.display = 'block';
+        message.innerHTML = 'Ух ты, обалдеть! Погнали!';
+    } else {
+        // Lose condition
+        const message = document.getElementById('message');
+        stopSound('suspense');
+        playSound('lose');
+        message.innerHTML = 'Попробуй ещё раз чтобы получить подсказку!<br><button class="play-button" onclick="restartFinalLevel()">Играть</button>';
+    }
+}
+
+function restartFinalLevel() {
+    document.getElementById('message').innerHTML = '';
+    document.getElementById('final-answer').value = '';
+    document.getElementById('win-picture').style.display = 'none';
+    playSound('suspense');
+}
+        
 function restartGame() {
     currentLevel = 1;
     initializeGame();
