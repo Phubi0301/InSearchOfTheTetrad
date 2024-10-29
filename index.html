@@ -208,7 +208,7 @@ function initializeGame() {
     
     // Play suspense music
     playSound('suspense');
-    if (currentLevel === 4) {
+  if (currentLevel === 4) {
     // Special handling for final level
     document.getElementById('word-display').innerHTML = `
         <div style="text-align: center; margin-bottom: 20px;">
@@ -235,7 +235,12 @@ function initializeGame() {
     document.getElementById('alphabet').style.display = 'none';
     document.getElementById('hangman-drawing').style.display = 'none';
     document.getElementById('errors-left').style.display = 'none';
-    return; // Make sure this return statement is here
+    
+    // Show Bishkek.png at start of final level
+    const winPicture = document.getElementById('win-picture');
+    winPicture.src = 'Bishkek.png';
+    winPicture.style.display = 'block';
+    return;
 }
         
     let wordDisplay = '';
@@ -402,7 +407,9 @@ function checkFinalAnswer() {
 function restartFinalLevel() {
     document.getElementById('message').innerHTML = '';
     document.getElementById('final-answer').value = '';
-    document.getElementById('win-picture').style.display = 'none';
+    const winPicture = document.getElementById('win-picture');
+    winPicture.src = 'Bishkek.png';
+    winPicture.style.display = 'block';  // Keep Bishkek.png visible
     playSound('suspense');
 }
         
