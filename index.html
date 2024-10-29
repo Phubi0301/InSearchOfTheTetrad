@@ -313,8 +313,8 @@ function guessLetter(letter) {
     if (guessedLetters.has(letter)) return;
     guessedLetters.add(letter);
     const letterElement = document.querySelector(`.alphabet-letter[data-letter="${letter}"]`);
-    if ((currentLevel === 3 && (word[0].includes(letter) || word[1].includes(letter))) ||
-        (currentLevel !== 3 && word.includes(letter))) {
+    if ((currentLevel === 3 && (words[3][0].includes(letter) || words[3][1].includes(letter))) ||
+        (currentLevel !== 3 && words[currentLevel].includes(letter))) {
         letterElement.style.backgroundColor = 'green';
         letterElement.style.color = 'white';
         playSound('correct');
@@ -333,7 +333,7 @@ function guessLetter(letter) {
 
 function updateWordDisplay() {
     if (currentLevel === 3) {
-        word.forEach((w, index) => {
+        words[3].forEach((w, index) => {
             const display = w.split('').map(letter =>
                 guessedLetters.has(letter) ? letter : ''
             );
@@ -342,7 +342,7 @@ function updateWordDisplay() {
             });
         });
     } else {
-        const display = word.split('').map(letter =>
+        const display = words[currentLevel].split('').map(letter =>
             guessedLetters.has(letter) ? letter : ''
         );
         document.querySelector('.word-row').childNodes.forEach((box, index) => {
