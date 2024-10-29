@@ -426,12 +426,18 @@ function goToNextLevel() {
             stopSound('meladze');
         } else if (currentLevel === 3) {
             stopSound('molodets');
-            // Clear the message and any buttons when moving to level 4
-            if (currentLevel === 3) {
-                document.getElementById('message').innerHTML = '';
-            }
+            // Clear message and change image when moving to level 4
+            document.getElementById('message').innerHTML = '';
         }
         currentLevel++;
+        
+        // If moving to level 4, update the image before initializing
+        if (currentLevel === 4) {
+            const winPicture = document.getElementById('win-picture');
+            winPicture.src = 'Bishkek.png';
+            winPicture.style.display = 'block';
+        }
+        
         initializeGame();
     }
 }
