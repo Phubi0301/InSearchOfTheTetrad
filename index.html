@@ -351,6 +351,7 @@ function updateWordDisplay() {
     }
 }
 
+
 function updateErrorsLeft() {
     document.getElementById('errors-left').textContent = `Оставшиеся допущенные ошибки: ${errorsLeft}`;
     if (currentLevel === 3 && errorsLeft === 3) {
@@ -420,6 +421,7 @@ function endGame(isWin) {
 
 function restartGame() {
     currentLevel = 1;
+    word = words[currentLevel];  // Update the word variable
     initializeGame();
 }
 
@@ -433,6 +435,7 @@ function goToNextLevel() {
             stopSound('molodets');
         }
         currentLevel++;
+        word = words[currentLevel];  // Update the word variable
         initializeGame();
     }
 }
