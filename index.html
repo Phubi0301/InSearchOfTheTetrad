@@ -386,22 +386,26 @@ function endGame(isWin) {
         // Add the new functions here
 function checkFinalAnswer() {
     const answer = document.getElementById('final-answer').value.trim();
+    const message = document.getElementById('message');
+    const winPicture = document.getElementById('win-picture');
     if (answer.toLowerCase() === 'zaandukki') {
         // Win condition
-        const message = document.getElementById('message');
         stopSound('suspense');
         playSound('zaandukki');
-        const winPicture = document.getElementById('win-picture');
         winPicture.src = 'zaandukki.jpg';
         winPicture.style.display = 'block';
-        message.innerHTML = 'Ух ты, обалдеть! Погнали!';
+        message.innerHTML = 'Ух ты, обалдеть! Погнали!<br><button class="play-button" onclick="stopZaandukkiMusic()">Остановить эту ужасную музыку</button>';
     } else {
         // Lose condition
-        const message = document.getElementById('message');
         stopSound('suspense');
         playSound('lose');
         message.innerHTML = 'Попробуй ещё раз чтобы получить подсказку!<br><button class="play-button" onclick="restartFinalLevel()">Играть</button>';
     }
+}
+
+function stopZaandukkiMusic() {
+    stopSound('zaandukki');
+    document.getElementById('message').innerHTML = 'Музыка остановлена. Вы молодец!';
 }
 
 function restartFinalLevel() {
