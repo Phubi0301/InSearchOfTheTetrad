@@ -204,7 +204,7 @@ function stopSound(soundName) {
 
 function initializeGame() {
     word = words[currentLevel];
-    document.getElementById('game-title').textContent = currentLevel === 4 ? 'Виселица – Финальный уровень' : `Виселица - Уровень ${currentLevel}`;
+    document.getElementById('game-title').textContent = currentLevel === 4 ? 'Финальный уровень' : `Виселица - Уровень ${currentLevel}`;
     
     // Play suspense music
     playSound('suspense');
@@ -261,10 +261,20 @@ function initializeGame() {
         document.getElementById('alphabet').innerHTML = alphabet.split('').map(letter =>
             `<div class="alphabet-letter" data-letter="${letter}">${letter}</div>`
         ).join('');
+
+        // Add click event listeners to alphabet letters
+        document.querySelectorAll('.alphabet-letter').forEach(letter => {
+            letter.addEventListener('click', function() {
+                const letterValue = this.getAttribute('data-letter');
+                if (letterValue) {
+                    guessLetter(letterValue);
+                }
+            });
+        });
     }
 
     errorsLeft = 7;
-    guessedLetters.clear();
+    guessedLetters = new Set();  // Reset guessedLetters
     updateErrorsLeft();
     document.querySelector('#hangman-drawing svg').innerHTML = '';
     document.getElementById('message').innerHTML = '';
