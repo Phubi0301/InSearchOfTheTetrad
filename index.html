@@ -208,36 +208,35 @@ function initializeGame() {
     
     // Play suspense music
     playSound('suspense');
-    
     if (currentLevel === 4) {
-        // Special handling for final level
-        document.getElementById('word-display').innerHTML = `
-            <div style="text-align: center; margin-bottom: 20px;">
-                <div style="font-size: 20px; margin-bottom: 15px;">Напишите название следующего места латиницей</div>
-                <input type="text" id="final-answer" 
-                    style="padding: 10px; 
-                           font-size: 18px; 
-                           width: 200px; 
-                           text-align: center; 
-                           border: 2px solid black; 
-                           border-radius: 5px;">
-                <button onclick="checkFinalAnswer()" 
-                    style="display: block; 
-                           margin: 15px auto; 
-                           padding: 10px 20px; 
-                           font-size: 18px; 
-                           background-color: #2f855a; 
-                           color: white; 
-                           border: 2px solid black; 
-                           cursor: pointer;">
-                    Проверить
-                </button>
-            </div>`;
-        document.getElementById('alphabet').style.display = 'none';
-        document.getElementById('hangman-drawing').style.display = 'none';
-        document.getElementById('errors-left').style.display = 'none';
-        return; // Exit the function early for level 4
-    }
+    // Special handling for final level
+    document.getElementById('word-display').innerHTML = `
+        <div style="text-align: center; margin-bottom: 20px;">
+            <div style="font-size: 20px; margin-bottom: 15px;">Напишите название следующего места латиницей</div>
+            <input type="text" id="final-answer" 
+                style="padding: 10px; 
+                       font-size: 18px; 
+                       width: 200px; 
+                       text-align: center; 
+                       border: 2px solid black; 
+                       border-radius: 5px;">
+            <button onclick="checkFinalAnswer()" 
+                style="display: block; 
+                       margin: 15px auto; 
+                       padding: 10px 20px; 
+                       font-size: 18px; 
+                       background-color: #2f855a; 
+                       color: white; 
+                       border: 2px solid black; 
+                       cursor: pointer;">
+                Проверить
+            </button>
+        </div>`;
+    document.getElementById('alphabet').style.display = 'none';
+    document.getElementById('hangman-drawing').style.display = 'none';
+    document.getElementById('errors-left').style.display = 'none';
+    return; // Make sure this return statement is here
+}
         
     let wordDisplay = '';
     if (currentLevel === 3) {
@@ -351,14 +350,7 @@ function endGame(isWin) {
     stopSound('suspense');
     
     if (isWin) {
-        if (currentLevel === 4) {
-            playSound('zaandukki');
-            const winPicture = document.getElementById('win-picture');
-            winPicture.src = 'zaandukki.jpg';
-            winPicture.style.display = 'block';
-            document.getElementById('hangman-drawing').style.display = 'none';
-            message.innerHTML = 'Ух ты, обалдеть! Погнали!';
-        } else if (currentLevel === 1) {
+        if (currentLevel === 1) {
             playSound('november');
             const winPicture = document.getElementById('win-picture');
             winPicture.src = 'November.jpg';
