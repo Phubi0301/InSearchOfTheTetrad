@@ -209,35 +209,94 @@ function initializeGame() {
     // Play suspense music
     playSound('suspense');
     
-    let wordDisplay = '';
-    if (currentLevel === 3) {
-        wordDisplay = word.map(w =>
-            `<div class="word-row">${w.split('').map(() => '<div class="letter-box"></div>').join('')}</div>`
-        ).join('');
+    if (currentLevel === 4) {
+        // Special handling for final level
+        document.getElementById('word-display').innerHTML = `
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div style="font-size: 20px; margin-bottom: 15px;">Напишите название следующего места латиницей</div>
+                <input type="text" id="final-answer" 
+                    style="padding: 10px; 
+                           font-size: 18px; 
+                           width: 200px; 
+                           text-align: center; 
+                           border: 2px solid black; 
+                           border-radius: 5px;">
+                <button onclick="checkFinalAnswer()" 
+                    style="display: block; 
+                           margin: 15px auto; 
+                           padding: 10px 20px; 
+                           font-size: 18px; 
+                           background-color: #2f855a; 
+                           color: white; 
+                           border: 2px solid black; 
+                           cursor: pointer;">
+                    Проверить
+                </button>
+            </div>`;
+        document.getElementById('alphabet').style.display = 'none';
+        document.getElementById('hangman-drawing').style.display = 'none';
+        document.getElementById('errors-left').style.display = 'none';
+        
+        // Add enter key listener
+        document.getElementById('final-answer').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkFinalAnswer();
+            }
+        });
     } else {
-        wordDisplay = `<div class="word-row">${word.split('').map(() => '<div class="letter-box"></div>').join('')}</div>`;
+        // Original hangman code for levels 1-3
+        document.getElementById('alphabet').style.display = 'flex';
+        document.getElementById('hangman-drawing').style.display = 'block';
+        document.getElementById('errors-left').style.display = 'block';
+        let wordDisplay = '';
+        if (currentLevel === 3) {
+            wordDisplay = word.map(w =>
+                `<div class="word-row">${w.split('').map(() => '<div class="letter-box"></div>').join('')}</div>`
+            ).join('');
+        } else {
+            wordDisplay = `<div class="word-row">${word.split('').map(() => '<div class="letter-box"></div>').join('')}</div>`;
+        }
+        document.getElementById('word-display').innerHTML = wordDisplay;
+        const alphabet = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ';
+        document.getElementById('alphabet').innerHTML = alphabet.split('').map(letter =>
+            `<div class="alphabet-letter" data-letter="${letter}">${letter}</div>`
+        ).join('');
     }
-    document.getElementById('word-display').innerHTML = wordDisplay;
-    const alphabet = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ';
-    document.getElementById('alphabet').innerHTML = alphabet.split('').map(letter =>
-        `<div class="alphabet-letter" data-letter="${letter}">${letter}</div>`
-    ).join('');
+
     errorsLeft = 7;
     guessedLetters.clear();
     updateErrorsLeft();
     document.querySelector('#hangman-drawing svg').innerHTML = '';
     document.getElementById('message').innerHTML = '';
-    document.getElementById('alphabet').style.pointerEvents = 'auto';
     document.getElementById('win-picture').style.display = 'none';
-    document.getElementById('hangman-drawing').style.display = 'block';
     document.getElementById('hint').textContent = '';
-    
-    // Add click event listeners to alphabet letters
-    document.querySelectorAll('.alphabet-letter').forEach(letter => {
-        letter.addEventListener('click', function() {
-            guessLetter(this.dataset.letter);
-        });
-    });
+}
+
+function checkFinalAnswer() {
+    const answer = document.getElementById('final-answer').value.trim();
+    if (answer.toLowerCase() === 'zaandukki') {
+        // Win condition
+        const message = document.getElementById('message');
+        stopSound('suspense');
+        playSound('zaandukki');
+        const winPicture = document.getElementById('win-picture');
+        winPicture.src = 'zaandukki.jpg';
+        winPicture.style.display = 'block';
+        message.innerHTML = 'Ух ты, обалдеть! Погнали!';
+    } else {
+        // Lose condition
+        const message = document.getElementById('message');
+        stopSound('suspense');
+        playSound('lose');
+        message.innerHTML = 'Попробуй ещё раз чтобы получить подсказку!<br><button class="play-button" onclick="restartFinalLevel()">Играть</button>';
+    }
+}
+
+function restartFinalLevel() {
+    document.getElementById('message').innerHTML = '';
+    document.getElementById('final-answer').value = '';
+    document.getElementById('win-picture').style.display = 'none';
+    playSound('suspense');
 }
 
 function guessLetter(letter) {
