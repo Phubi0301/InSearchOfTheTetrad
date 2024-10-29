@@ -226,21 +226,18 @@ function initializeGame() {
         }
         document.getElementById('word-display').innerHTML = wordDisplay;
         
-        // Create alphabet buttons with unique IDs
        const alphabet = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ';
-const alphabetHtml = alphabet.split('').map(letter =>
-    `<div class="alphabet-letter" data-letter="${letter}" onclick="guessLetter('${letter}')">${letter}</div>`
+document.getElementById('alphabet').innerHTML = alphabet.split('').map(letter =>
+    `<div class="alphabet-letter" data-letter="${letter}">${letter}</div>`
 ).join('');
-        document.getElementById('alphabet').innerHTML = alphabetHtml;
-        
-        // Add click listeners after creating the elements
-        alphabet.split('').forEach(letter => {
-            const element = document.getElementById(`letter-${letter}`);
-            if (element) {
-                element.addEventListener('click', () => guessLetter(letter));
-            }
-        });
-    }
+
+// Add click listeners after creating the elements
+document.querySelectorAll('.alphabet-letter').forEach(element => {
+    element.addEventListener('click', function() {
+        const letter = this.getAttribute('data-letter');
+        guessLetter(letter);
+    });
+});
 
     errorsLeft = 7;
     guessedLetters = new Set();
