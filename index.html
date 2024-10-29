@@ -310,28 +310,54 @@ function restartFinalLevel() {
 }
 
 function guessLetter(letter) {
-    if (guessedLetters.has(letter)) return;
+    console.log('Guessing letter:', letter, 'Current level:', currentLevel, 'Current word:', words[currentLevel]);
+    
+    if (guessedLetters.has(letter)) {
+        console.log('Letter already guessed');
+        return;
+    }
+    
     guessedLetters.add(letter);
     const letterElement = document.querySelector(`.alphabet-letter[data-letter="${letter}"]`);
-    if ((currentLevel === 3 && (words[3][0].includes(letter) || words[3][1].includes(letter))) ||
-        (currentLevel !== 3 && words[currentLevel].includes(letter))) {
-        letterElement.style.backgroundColor = 'green';
-        letterElement.style.color = 'white';
-        playSound('correct');
-        updateWordDisplay();
-        checkWin();
+    
+    if (currentLevel === 3) {
+        if (words[3][0].includes(letter) || words[3][1].includes(letter)) {
+            letterElement.style.backgroundColor = 'green';
+            letterElement.style.color = 'white';
+            playSound('correct');
+            updateWordDisplay();
+            checkWin();
+        } else {
+            letterElement.style.backgroundColor = 'red';
+            letterElement.style.color = 'white';
+            playSound('incorrect');
+            errorsLeft--;
+            updateErrorsLeft();
+            updateHangman();
+            checkLoss();
+        }
     } else {
-        letterElement.style.backgroundColor = 'red';
-        letterElement.style.color = 'white';
-        playSound('incorrect');
-        errorsLeft--;
-        updateErrorsLeft();
-        updateHangman();
-        checkLoss();
+        if (words[currentLevel].includes(letter)) {
+            letterElement.style.backgroundColor = 'green';
+            letterElement.style.color = 'white';
+            playSound('correct');
+            updateWordDisplay();
+            checkWin();
+        } else {
+            letterElement.style.backgroundColor = 'red';
+            letterElement.style.color = 'white';
+            playSound('incorrect');
+            errorsLeft--;
+            updateErrorsLeft();
+            updateHangman();
+            checkLoss();
+        }
     }
 }
 
 function updateWordDisplay() {
+    console.log('Updating display for level:', currentLevel, 'Word:', words[currentLevel]);
+    
     if (currentLevel === 3) {
         words[3].forEach((w, index) => {
             const display = w.split('').map(letter =>
