@@ -388,13 +388,16 @@ function checkFinalAnswer() {
     const answer = document.getElementById('final-answer').value.trim();
     const message = document.getElementById('message');
     const winPicture = document.getElementById('win-picture');
+    
     if (answer.toLowerCase() === 'zaandukki') {
         // Win condition
         stopSound('suspense');
         playSound('zaandukki');
         winPicture.src = 'zaandukki.jpg';
         winPicture.style.display = 'block';
-        message.innerHTML = 'Ух ты, обалдеть! Погнали!<br><button class="play-button" onclick="stopZaandukkiMusic()">Остановить эту ужасную музыку</button>';
+
+        // Replace the "Проверить" button with "Остановить эту ужасную музыку"
+        message.innerHTML = '<button class="play-button" onclick="stopZaandukkiMusic()">Остановить эту ужасную музыку</button>';
     } else {
         // Lose condition
         stopSound('suspense');
