@@ -244,33 +244,23 @@ function initializeGame() {
             }
         });
     } else {
-        // Original hangman code for levels 1-3
-        document.getElementById('alphabet').style.display = 'flex';
-        document.getElementById('hangman-drawing').style.display = 'block';
-        document.getElementById('errors-left').style.display = 'block';
-        let wordDisplay = '';
-        if (currentLevel === 3) {
-            wordDisplay = words[3].map(w =>
-                `<div class="word-row">${w.split('').map(() => '<div class="letter-box"></div>').join('')}</div>`
-            ).join('');
-        } else {
-            wordDisplay = `<div class="word-row">${word.split('').map(() => '<div class="letter-box"></div>').join('')}</div>`;
-        }
-        document.getElementById('word-display').innerHTML = wordDisplay;
-        const alphabet = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ';
-        document.getElementById('alphabet').innerHTML = alphabet.split('').map(letter =>
-            `<div class="alphabet-letter" data-letter="${letter}">${letter}</div>`
+    document.getElementById('alphabet').style.display = 'flex';
+    document.getElementById('hangman-drawing').style.display = 'block';
+    document.getElementById('errors-left').style.display = 'block';
+    let wordDisplay = '';
+    if (currentLevel === 3) {
+        wordDisplay = words[3].map(w =>
+            `<div class="word-row">${w.split('').map(() => '<div class="letter-box"></div>').join('')}</div>`
         ).join('');
-
-        // Add click event listeners to alphabet letters
-        document.querySelectorAll('.alphabet-letter').forEach(letter => {
-            letter.addEventListener('click', function() {
-                const letterValue = this.getAttribute('data-letter');
-                if (letterValue) {
-                    guessLetter(letterValue);
-                }
-            });
-        });
+    } else {
+        wordDisplay = `<div class="word-row">${words[currentLevel].split('').map(() => '<div class="letter-box"></div>').join('')}</div>`;
+    }
+    document.getElementById('word-display').innerHTML = wordDisplay;
+    const alphabet = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ';
+    const alphabetHtml = alphabet.split('').map(letter =>
+        `<div class="alphabet-letter" data-letter="${letter}" onclick="guessLetter('${letter}')">${letter}</div>`
+    ).join('');
+    document.getElementById('alphabet').innerHTML = alphabetHtml;
     }
 
     errorsLeft = 7;
@@ -310,48 +300,38 @@ function restartFinalLevel() {
 }
 
 function guessLetter(letter) {
-    console.log('Guessing letter:', letter, 'Current level:', currentLevel, 'Current word:', words[currentLevel]);
+    console.log("Letter clicked:", letter, "Current level:", currentLevel, "Current word:", words[currentLevel]);
     
     if (guessedLetters.has(letter)) {
-        console.log('Letter already guessed');
+        console.log("Letter already guessed");
         return;
     }
     
     guessedLetters.add(letter);
     const letterElement = document.querySelector(`.alphabet-letter[data-letter="${letter}"]`);
     
+    let isCorrect = false;
+    
     if (currentLevel === 3) {
-        if (words[3][0].includes(letter) || words[3][1].includes(letter)) {
-            letterElement.style.backgroundColor = 'green';
-            letterElement.style.color = 'white';
-            playSound('correct');
-            updateWordDisplay();
-            checkWin();
-        } else {
-            letterElement.style.backgroundColor = 'red';
-            letterElement.style.color = 'white';
-            playSound('incorrect');
-            errorsLeft--;
-            updateErrorsLeft();
-            updateHangman();
-            checkLoss();
-        }
+        isCorrect = words[3][0].includes(letter) || words[3][1].includes(letter);
     } else {
-        if (words[currentLevel].includes(letter)) {
-            letterElement.style.backgroundColor = 'green';
-            letterElement.style.color = 'white';
-            playSound('correct');
-            updateWordDisplay();
-            checkWin();
-        } else {
-            letterElement.style.backgroundColor = 'red';
-            letterElement.style.color = 'white';
-            playSound('incorrect');
-            errorsLeft--;
-            updateErrorsLeft();
-            updateHangman();
-            checkLoss();
-        }
+        isCorrect = words[currentLevel].includes(letter);
+    }
+    
+    if (isCorrect) {
+        letterElement.style.backgroundColor = 'green';
+        letterElement.style.color = 'white';
+        playSound('correct');
+        updateWordDisplay();
+        checkWin();
+    } else {
+        letterElement.style.backgroundColor = 'red';
+        letterElement.style.color = 'white';
+        playSound('incorrect');
+        errorsLeft--;
+        updateErrorsLeft();
+        updateHangman();
+        checkLoss();
     }
 }
 
