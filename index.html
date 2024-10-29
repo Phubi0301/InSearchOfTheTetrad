@@ -227,10 +227,10 @@ function initializeGame() {
         document.getElementById('word-display').innerHTML = wordDisplay;
         
         // Create alphabet buttons with unique IDs
-        const alphabet = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ';
-        const alphabetHtml = alphabet.split('').map(letter =>
-            `<div class="alphabet-letter" id="letter-${letter}" data-letter="${letter}">${letter}</div>`
-        ).join('');
+       const alphabet = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ';
+const alphabetHtml = alphabet.split('').map(letter =>
+    `<div class="alphabet-letter" data-letter="${letter}" onclick="guessLetter('${letter}')">${letter}</div>`
+).join('');
         document.getElementById('alphabet').innerHTML = alphabetHtml;
         
         // Add click listeners after creating the elements
@@ -279,7 +279,10 @@ function restartFinalLevel() {
 }
 
 function guessLetter(letter) {
-    console.log("Guessing letter:", letter, "for word:", words[currentLevel]); // Debug log
+    // Remove any quotes that might be around the letter
+    letter = letter.replace(/['"]/g, '');
+    
+    console.log("Guessing letter:", letter, "Current level:", currentLevel, "Current word:", words[currentLevel]);
     
     if (guessedLetters.has(letter)) {
         console.log("Letter already guessed");
@@ -287,7 +290,7 @@ function guessLetter(letter) {
     }
     
     guessedLetters.add(letter);
-    const letterElement = document.getElementById(`letter-${letter}`);
+    const letterElement = document.querySelector(`.alphabet-letter[data-letter="${letter}"]`);
     
     let isCorrect = false;
     
@@ -297,7 +300,7 @@ function guessLetter(letter) {
         isCorrect = words[currentLevel].includes(letter);
     }
     
-    console.log("Is correct:", isCorrect); // Debug log
+    console.log("Letter is correct:", isCorrect);
     
     if (isCorrect) {
         letterElement.style.backgroundColor = 'green';
