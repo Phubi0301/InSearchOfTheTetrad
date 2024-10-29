@@ -208,41 +208,42 @@ function initializeGame() {
     
     // Play suspense music
     playSound('suspense');
-  if (currentLevel === 4) {
-    // Special handling for final level
-    document.getElementById('word-display').innerHTML = `
-        <div style="text-align: center; margin-bottom: 20px;">
-            <div style="font-size: 20px; margin-bottom: 15px;">Напишите название следующего места латиницей</div>
-            <input type="text" id="final-answer" 
-                style="padding: 10px; 
-                       font-size: 18px; 
-                       width: 200px; 
-                       text-align: center; 
-                       border: 2px solid black; 
-                       border-radius: 5px;">
-            <button onclick="checkFinalAnswer()" 
-                style="display: block; 
-                       margin: 15px auto; 
-                       padding: 10px 20px; 
-                       font-size: 18px; 
-                       background-color: #2f855a; 
-                       color: white; 
-                       border: 2px solid black; 
-                       cursor: pointer;">
-                Проверить
-            </button>
-        </div>`;
-    document.getElementById('alphabet').style.display = 'none';
-    document.getElementById('hangman-drawing').style.display = 'none';
-    document.getElementById('errors-left').style.display = 'none';
     
-    // Show Bishkek.png at start of final level
-    const winPicture = document.getElementById('win-picture');
-    winPicture.src = 'Bishkek.png';
-    winPicture.style.display = 'block';
-    return;
-}
+    if (currentLevel === 4) {
+        // Special handling for final level
+        document.getElementById('word-display').innerHTML = `
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div style="font-size: 20px; margin-bottom: 15px;">Напишите название следующего места латиницей</div>
+                <input type="text" id="final-answer" 
+                    style="padding: 10px; 
+                           font-size: 18px; 
+                           width: 200px; 
+                           text-align: center; 
+                           border: 2px solid black; 
+                           border-radius: 5px;">
+                <button onclick="checkFinalAnswer()" 
+                    style="display: block; 
+                           margin: 15px auto; 
+                           padding: 10px 20px; 
+                           font-size: 18px; 
+                           background-color: #2f855a; 
+                           color: white; 
+                           border: 2px solid black; 
+                           cursor: pointer;">
+                    Проверить
+                </button>
+            </div>`;
+        document.getElementById('alphabet').style.display = 'none';
+        document.getElementById('hangman-drawing').style.display = 'none';
+        document.getElementById('errors-left').style.display = 'none';
         
+        // Show Bishkek.png at start of final level
+        const winPicture = document.getElementById('win-picture');
+        winPicture.src = 'Bishkek.png';
+        winPicture.style.display = 'block';
+        return;
+    }
+
     let wordDisplay = '';
     if (currentLevel === 3) {
         wordDisplay = word.map(w =>
@@ -407,10 +408,10 @@ function checkFinalAnswer() {
 function restartFinalLevel() {
     document.getElementById('message').innerHTML = '';
     document.getElementById('final-answer').value = '';
+    playSound('suspense');
     const winPicture = document.getElementById('win-picture');
     winPicture.src = 'Bishkek.png';
-    winPicture.style.display = 'block';  // Keep Bishkek.png visible
-    playSound('suspense');
+    winPicture.style.display = 'block';
 }
         
 function restartGame() {
@@ -420,24 +421,16 @@ function restartGame() {
 
 function goToNextLevel() {
     if (currentLevel < 4) {
+        // Stop any playing sounds
         if (currentLevel === 1) {
             stopSound('november');
         } else if (currentLevel === 2) {
             stopSound('meladze');
         } else if (currentLevel === 3) {
             stopSound('molodets');
-            // Clear message and change image when moving to level 4
-            document.getElementById('message').innerHTML = '';
         }
+        
         currentLevel++;
-        
-        // If moving to level 4, update the image before initializing
-        if (currentLevel === 4) {
-            const winPicture = document.getElementById('win-picture');
-            winPicture.src = 'Bishkek.png';
-            winPicture.style.display = 'block';
-        }
-        
         initializeGame();
     }
 }
