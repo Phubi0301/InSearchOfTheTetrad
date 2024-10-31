@@ -361,7 +361,7 @@ function endGame(isWin) {
             winPicture.src = 'November.jpg';
             winPicture.style.display = 'block';
             document.getElementById('hangman-drawing').style.display = 'none';
-            message.innerHTML = 'Поздравляю! К следующему раунду?<br><button class="next-level-button" onclick="goToNextLevel()">Уровень 2</button>';
+            message.innerHTML = 'Поздравляю! К следующемей подсказке?<br><button class="next-level-button" onclick="goToNextLevel()">Уровень 2</button>';
         } else if (currentLevel === 2) {
             playSound('meladze');
             const winPicture = document.getElementById('win-picture');
