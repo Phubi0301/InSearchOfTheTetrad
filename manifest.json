@@ -5,11 +5,19 @@
     {
       "src": "Dumbledore.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "Dumbledore.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ],
-  "start_url": "index.html",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#48bb78",
-  "theme_color": "#48bb78"
+  "theme_color": "#48bb78",
+  "prefer_related_applications": false
 }
