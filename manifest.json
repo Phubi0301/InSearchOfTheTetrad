@@ -1,0 +1,15 @@
+{
+  "name": "Сабина",
+  "short_name": "Albus Dumbledore",
+  "icons": [
+    {
+      "src": "Dumbledore.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#48bb78",
+  "theme_color": "#48bb78"
+}
